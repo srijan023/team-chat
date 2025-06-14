@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@radix-ui/react-separator";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { SignInFlow } from "../types";
+import CustomInputField from "@/components/custom/inputField";
 
 interface SignUpProps {
     setState: (state: SignInFlow) => void
@@ -19,40 +19,36 @@ export default function SignUpCard({ setState }: SignUpProps) {
         <CardDescription className="text-primary-text text-center">Create account to communicate with your team</CardDescription>
         <CardContent className="px-0 pb-0">
             <form className="space-y-3">
-                <Input
-                    className="border border-gray-600"
+                <CustomInputField
                     disabled={false}
                     value=""
                     placeholder="Full Name"
                     type="text"
-                    required
+                    required={true}
                     onChange={() => { }} />
 
-                <Input
-                    className="border border-gray-600"
+                <CustomInputField
                     disabled={false}
                     value=""
                     placeholder="Email"
                     type="email"
-                    required
+                    required={true}
                     onChange={() => { }} />
 
-                <Input
-                    className="border border-gray-600"
+                <CustomInputField
                     disabled={false}
                     value=""
                     placeholder="Password"
                     type="password"
-                    required
+                    required={true}
                     onChange={() => { }} />
 
-                <Input
-                    className="border border-gray-600"
+                <CustomInputField
                     disabled={false}
                     value=""
                     placeholder="Confirm Password"
                     type="password"
-                    required
+                    required={true}
                     onChange={() => { }} />
 
                 <Button className="bg-accent-first text-white hover:bg-accent-first/80 cursor-pointer w-full" size={"lg"} disabled={false} type="submit">Continue</Button>
