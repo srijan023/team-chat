@@ -1,16 +1,37 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@radix-ui/react-separator";
 import { FaGithub, FaGoogle } from "react-icons/fa";
-import { SignInFlow } from "../types";
+import { SignInFlow, SignUpType } from "../types";
 import CustomInputField from "@/components/custom/inputField";
+import DateInput from "@/components/custom/dateInput";
+import { PrimaryButton, SecondaryButton } from "@/components/custom/primaryButton";
+import { useForm } from "@tanstack/react-form";
+import { signUpSchema } from "../validationSchema";
 
 interface SignUpProps {
     setState: (state: SignInFlow) => void
 }
 
 export default function SignUpCard({ setState }: SignUpProps) {
-    return (<Card className="border relative border-gray-800 bg-primary-background  text-white h-full w-full p-8">
+
+    const signUpForm = useForm({
+        defaultValues: {
+            email: "",
+            password: "",
+            confirmPassword: "",
+            dateOfBirth: undefined,
+            fullName: ""
+        } as SignUpType,
+        validators: {
+            onSubmit: signUpSchema
+        },
+        onSubmit: (formData) => {
+            console.log(formData.value)
+        },
+
+    })
+
+    return (<Card className="border relative border-gray-800 bg-primary-background  text-primary-text h-full w-full p-8">
         <CardHeader className="px-0 pt-0">
             <CardTitle className="text-center text-2xl">
                 Sign Up An Account
@@ -18,52 +39,81 @@ export default function SignUpCard({ setState }: SignUpProps) {
         </CardHeader>
         <CardDescription className="text-primary-text text-center">Create account to communicate with your team</CardDescription>
         <CardContent className="px-0 pb-0">
-            <form className="space-y-3">
-                <CustomInputField
-                    disabled={false}
-                    value=""
-                    placeholder="Full Name"
-                    type="text"
-                    required={true}
-                    onChange={() => { }} />
+            <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); signUpForm.handleSubmit() }}>
+                <signUpForm.Field name="fullName">
+                    {(field) => (
+                        <CustomInputField
+                            label={"Full Name"}
+                            disabled={false}
+                            name={"fullname"}
+                            value={field.state.value}
+                            placeholder="John Doe"
+                            type="text"
+                            errors={field.state.meta.errors.map(error => error?.message).join(", ") || undefined}
+                            onChange={e => field.setValue(e.target.value)} />
 
-                <CustomInputField
-                    disabled={false}
-                    value=""
-                    placeholder="Email"
-                    type="email"
-                    required={true}
-                    onChange={() => { }} />
+                    )}
+                </signUpForm.Field>
 
-                <CustomInputField
-                    disabled={false}
-                    value=""
-                    placeholder="Password"
-                    type="password"
-                    required={true}
-                    onChange={() => { }} />
+                <signUpForm.Field name="dateOfBirth">
+                    {(field) => (
+                        <DateInput errors={field.state.meta.errors.map(error => error?.message).join(', ')} date={field.state.value} setDateAction={(value: Date | undefined) => field.setValue(value)} label={"Date of Birth"} />
+                    )}
+                </signUpForm.Field>
 
-                <CustomInputField
-                    disabled={false}
-                    value=""
-                    placeholder="Confirm Password"
-                    type="password"
-                    required={true}
-                    onChange={() => { }} />
+                <signUpForm.Field name="email">
+                    {(field) => (
+                        <CustomInputField
+                            label={"Email"}
+                            name={"email"}
+                            disabled={false}
+                            value={field.state.value}
+                            placeholder="johnDoe@email.com"
+                            type="email"
+                            errors={field.state.meta.errors.map(error => error?.message).join(', ')}
+                            onChange={e => field.setValue(e.target.value)} />
+                    )}
+                </signUpForm.Field>
 
-                <Button className="bg-accent-first text-white hover:bg-accent-first/80 cursor-pointer w-full" size={"lg"} disabled={false} type="submit">Continue</Button>
+                <signUpForm.Field name="password">
+                    {(field) => (
+                        <CustomInputField
+                            label={"Password"}
+                            disabled={false}
+                            name={"password"}
+                            value={field.state.value}
+                            type="password"
+                            errors={field.state.meta.errors.map(error => error?.message).join(', ')}
+                            onChange={e => field.setValue(e.target.value)} />
+                    )}
+                </signUpForm.Field>
+
+                <signUpForm.Field name="confirmPassword">
+                    {(field) => (
+                        <CustomInputField
+                            label={"Confirm Password"}
+                            disabled={false}
+                            name={"confirmPassword"}
+                            value={field.state.value}
+                            type="password"
+                            errors={field.state.meta.errors.map(error => error?.message).join(', ')}
+                            onChange={e => field.setValue(e.target.value)} />
+                    )}
+                </signUpForm.Field>
+
+                <PrimaryButton disabled={false} size="lg" type="submit">Continue</PrimaryButton>
 
                 <Separator className="border border-gray-700" />
                 <div className="flex flex-col gap-y-2.5">
-                    <Button disabled={false} onClick={() => { }} variant={"outline"} size="lg" className="bg-primary-background hover:border-accent-first hover:border hover:bg-primary-background hover:text-secondary-text text-secondary-text cursor-pointer border-gray-500">
+                    <SecondaryButton disabled={false} onClick={() => { }} size="lg">
                         <FaGoogle className="size-5" />
                         Continue with Google
-                    </Button>
+                    </SecondaryButton>
 
-                    <Button disabled={false} onClick={() => { }} variant={"outline"} size="lg" className="bg-primary-background hover:border-accent-first hover:border hover:bg-primary-background hover:text-secondary-text text-secondary-text cursor-pointer border-gray-500">
+                    <SecondaryButton disabled={false} onClick={() => { }} size="lg">
                         <FaGithub className="size-5" />
                         Continue with Github
-                    </Button>
+                    </SecondaryButton>
                 </div>
 
                 <p className="text-xs text-muted-foreground text-center cursor-pointer" onClick={() => { setState("signIn") }}>

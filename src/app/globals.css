@@ -10,6 +10,7 @@ body {
 
 @theme inline {
     --color-primary-background: var(--primary-dark);
+    --color-secondary-background: var(--secondary-dark);
     --color-primary-text: var(--primary-white);
     --color-secondary-text: var(--custom-grey);
     --color-accent-first: var(--accent-first);
@@ -143,9 +144,16 @@ body {
 
     input:-webkit-autofill,
     input {
-        -webkit-text-fill-color: var(--secondary-text) !important;
+        -webkit-box-shadow: 0 0 0px 1000px var(--secondary-dark) inset !important;
+        -webkit-text-fill-color: var(--primary-white) !important;
         transition: background-color 5000s ease-in-out 0s;
-        box-shadow: 0 0 0px 1000px var(--secondary-dark) inset !important;
+        caret-color: var(--primary-white) !important;
+    }
+
+    /* Fallback for regular input styling */
+    input {
+        color: var(--primary-white);
+        background-color: var(--secondary-dark);
     }
 
     * {

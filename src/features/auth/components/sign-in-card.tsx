@@ -1,15 +1,39 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@radix-ui/react-separator";
 import { FaGithub, FaGoogle } from "react-icons/fa";
-import { SignInFlow } from "../types";
+import { SignInFlow, SignInType } from "../types";
 import CustomInputField from "@/components/custom/inputField";
+import { useForm } from "@tanstack/react-form"
+import { FormEvent } from "react";
+import { PrimaryButton, SecondaryButton } from "@/components/custom/primaryButton";
+import { signUpSchema } from "../validationSchema";
 
 interface SignInCardProps {
-    setState: (state: SignInFlow) => void
+    setStateAction: (state: SignInFlow) => void
 }
 
-export default function SignInCard({ setState }: SignInCardProps) {
+export default function SignInCard({ setStateAction }: SignInCardProps) {
+
+    const signInForm = useForm(
+        {
+            defaultValues: {
+                email: "",
+                password: ""
+            } as SignInType,
+            validators: {
+                onSubmit: signUpSchema
+            },
+            onSubmit: (formData) => {
+                console.log(formData.value)
+            }
+        }
+    )
+
+    const handleSignIn = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        signInForm.handleSubmit();
+    }
+
     return (
         <Card className="bg-primary-background text-white border-gray-800 h-full w-full p-8">
             <CardHeader className="px-0 pt-0">
@@ -19,39 +43,50 @@ export default function SignInCard({ setState }: SignInCardProps) {
             </CardHeader>
             <CardDescription className="text-primary-text text-center">Create account to communicate with your team</CardDescription>
             <CardContent className="space-y-5 px-0 pb-0">
-                <form className="space-y-2.5">
-                    <CustomInputField
-                        disabled={false}
-                        value=""
-                        placeholder="Email"
-                        type="email"
-                        required={true}
-                        onChange={() => { }} />
+                <form className="space-y-2.5" onSubmit={handleSignIn}>
+                    <signInForm.Field name="email">
+                        {
+                            (field) => (
+                                <CustomInputField
+                                    label={"Email"}
+                                    name="email"
+                                    disabled={false}
+                                    value={field.state.value}
+                                    placeholder="johndoe@email.com"
+                                    type="email"
+                                    onChange={(e) => { field.setValue(e.target.value) }} />
+                            )
+                        }
+                    </signInForm.Field>
 
-                    <CustomInputField
-                        disabled={false}
-                        value=""
-                        placeholder="Password"
-                        type="password"
-                        required={true}
-                        onChange={() => { }} />
+                    <signInForm.Field name="password">
+                        {(field) => (
+                            <CustomInputField
+                                label={"Password"}
+                                name="password"
+                                disabled={false}
+                                value={field.state.value}
+                                type="password"
+                                onChange={(e) => { field.setValue(e.target.value) }} />
+                        )}
+                    </signInForm.Field>
 
-                    <Button className="bg-accent-first text-primary-text hover:bg-accent-first/80 cursor-pointer w-full" size={"lg"} disabled={false} type="submit">Continue</Button>
+                    <PrimaryButton disabled={false} size="lg" type="submit">Continue</PrimaryButton>
 
                     <Separator className="border border-gray-700" />
                     <div className="flex flex-col gap-y-2.5">
-                        <Button disabled={false} onClick={() => { }} variant={"outline"} size="lg" className="text-primary-text bg-primary-background hover:border-accent-first hover:border hover:bg-primary-background hover:text-primary-text cursor-pointer border-gray-500">
+                        <SecondaryButton disabled={false} onClick={() => { }} size="lg">
                             <FaGoogle className="size-5" />
                             Continue with Google
-                        </Button>
+                        </SecondaryButton>
 
-                        <Button disabled={false} onClick={() => { }} variant={"outline"} size="lg" className="bg-primary-background hover:border-accent-first hover:border hover:bg-primary-background hover:text-primary-text text-primary-text cursor-pointer border-gray-500">
+                        <SecondaryButton disabled={false} onClick={() => { }} size="lg">
                             <FaGithub className="size-5" />
                             Continue with Github
-                        </Button>
+                        </SecondaryButton>
                     </div>
 
-                    <p className="text-xs text-muted-foreground text-center cursor-pointer" onClick={() => { setState("signUp") }}>
+                    <p className="text-xs text-muted-foreground text-center cursor-pointer" onClick={() => { setStateAction("signUp") }}>
                         Don&apos;t have an account? <span className="text-accent-first hover:underline">Sign Up</span>
                     </p>
                 </form>
