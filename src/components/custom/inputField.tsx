@@ -14,7 +14,7 @@ interface CustomInputFieldProps {
 
 export default function CustomInputField({ errors, disabled, label, name, value, placeholder, type, onChange }: CustomInputFieldProps) {
     return (
-        <div className="w-full flex flex-col gap-2">
+        <div className="ourInput w-full flex flex-col gap-2">
             <Label className="px-1 text-sm" htmlFor={name}>{label}</Label>
             <Input
                 id={name}

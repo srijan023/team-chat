@@ -6,7 +6,7 @@ import CustomInputField from "@/components/custom/inputField";
 import { useForm } from "@tanstack/react-form"
 import { FormEvent } from "react";
 import { PrimaryButton, SecondaryButton } from "@/components/custom/primaryButton";
-import { signUpSchema } from "../validationSchema";
+import { signInSchema } from "../validationSchema";
 
 interface SignInCardProps {
     setStateAction: (state: SignInFlow) => void
@@ -21,7 +21,7 @@ export default function SignInCard({ setStateAction }: SignInCardProps) {
                 password: ""
             } as SignInType,
             validators: {
-                onSubmit: signUpSchema
+                onSubmit: signInSchema
             },
             onSubmit: (formData) => {
                 console.log(formData.value)
@@ -30,6 +30,7 @@ export default function SignInCard({ setStateAction }: SignInCardProps) {
     )
 
     const handleSignIn = (e: FormEvent<HTMLFormElement>) => {
+        console.log("Hello world")
         e.preventDefault();
         signInForm.handleSubmit();
     }
@@ -54,6 +55,7 @@ export default function SignInCard({ setStateAction }: SignInCardProps) {
                                     value={field.state.value}
                                     placeholder="johndoe@email.com"
                                     type="email"
+                                    errors={field.state.meta.errors.map(err => err?.message).join(', ')}
                                     onChange={(e) => { field.setValue(e.target.value) }} />
                             )
                         }
@@ -67,6 +69,7 @@ export default function SignInCard({ setStateAction }: SignInCardProps) {
                                 disabled={false}
                                 value={field.state.value}
                                 type="password"
+                                errors={field.state.meta.errors.map(err => err?.message).join(', ')}
                                 onChange={(e) => { field.setValue(e.target.value) }} />
                         )}
                     </signInForm.Field>

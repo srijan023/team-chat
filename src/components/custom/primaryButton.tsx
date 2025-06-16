@@ -9,9 +9,9 @@ interface ButtonProps {
     onClick?: MouseEventHandler
 }
 
-export function PrimaryButton({ children, disabled, size, type }: ButtonProps) {
+export function PrimaryButton({ onClick, children, disabled, size, type }: ButtonProps) {
     return (
-        <Button className="bg-accent-first text-primary-text hover:bg-accent-first/80 cursor-pointer w-full" size={size} disabled={disabled} type={type}>{children}</Button>)
+        <Button className="bg-accent-first text-primary-text hover:bg-accent-first/80 cursor-pointer w-full" onClick={onClick} size={size} disabled={disabled} type={type}>{children}</Button>)
 }
 
 export function SecondaryButton({ disabled, size, type, children, onClick }: ButtonProps) {

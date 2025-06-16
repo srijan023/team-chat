@@ -12,7 +12,7 @@ export default function AuthScreen() {
     return (
         <div className="z-10 relative h-full flex items-center justify-center">
             <div className="relative md:h-auto md:w-[420px]">
-                {state === 'signIn' ? <SignInCard setStateAction={setState} /> : <SignUpCard setState={setState} />}
+                {state === 'signIn' ? <SignInCard setStateAction={setState} /> : <SignUpCard setStateAction={setState} />}
             </div>
         </div>
     )

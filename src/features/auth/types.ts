@@ -1,14 +1,15 @@
 export type SignInFlow = "signIn" | "signUp";
 
 export type SignInType = {
-    email: string,
+    emailAddress: string,
     password: string
 }
 
 export type SignUpType = {
-    email: string,
+    emailAddress: string,
     password: string,
     confirmPassword: string,
     dateOfBirth: Date | undefined,
-    fullName: string
+    firstName: string
+    lastName: string
 }
