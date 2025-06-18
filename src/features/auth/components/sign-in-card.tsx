@@ -7,6 +7,8 @@ import { useForm } from "@tanstack/react-form"
 import { FormEvent } from "react";
 import { PrimaryButton, SecondaryButton } from "@/components/custom/primaryButton";
 import { signInSchema } from "../validationSchema";
+import { useSignIn } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 interface SignInCardProps {
     setStateAction: (state: SignInFlow) => void
@@ -14,23 +16,43 @@ interface SignInCardProps {
 
 export default function SignInCard({ setStateAction }: SignInCardProps) {
 
+    const { isLoaded, signIn, setActive } = useSignIn();
+    const router = useRouter();
+
     const signInForm = useForm(
         {
             defaultValues: {
-                email: "",
+                emailAddress: "",
                 password: ""
             } as SignInType,
             validators: {
                 onSubmit: signInSchema
             },
-            onSubmit: (formData) => {
+            onSubmit: async (formData) => {
+                if (!isLoaded) {
+                    return;
+                }
+
+                try {
+                    const result = await signIn.create({
+                        identifier: formData.value.emailAddress,
+                        password: formData.value.password
+                    })
+
+                    if (result?.status === "complete") {
+                        await setActive({ session: result.createdSessionId });
+                        router.push("/")
+                    }
+                    // eslint-disable-next-line
+                } catch (err: any) {
+                    console.log(err.errors?.[0].message ?? "Login failed")
+                }
                 console.log(formData.value)
             }
         }
     )
 
     const handleSignIn = (e: FormEvent<HTMLFormElement>) => {
-        console.log("Hello world")
         e.preventDefault();
         signInForm.handleSubmit();
     }
@@ -45,7 +67,7 @@ export default function SignInCard({ setStateAction }: SignInCardProps) {
             <CardDescription className="text-primary-text text-center">Create account to communicate with your team</CardDescription>
             <CardContent className="space-y-5 px-0 pb-0">
                 <form className="space-y-2.5" onSubmit={handleSignIn}>
-                    <signInForm.Field name="email">
+                    <signInForm.Field name="emailAddress">
                         {
                             (field) => (
                                 <CustomInputField
