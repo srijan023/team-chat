@@ -9,6 +9,7 @@ import { PrimaryButton, SecondaryButton } from "@/components/custom/primaryButto
 import { signInSchema } from "../validationSchema";
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface SignInCardProps {
     setStateAction: (state: SignInFlow) => void
@@ -95,6 +96,10 @@ export default function SignInCard({ setStateAction }: SignInCardProps) {
                                 onChange={(e) => { field.setValue(e.target.value) }} />
                         )}
                     </signInForm.Field>
+
+                    <div className='text-right'>
+                        <Link href="/forgot-password" className='text-sm w-full hover:underline py-1 text-accent-second italic'>Forgot Password</Link>
+                    </div>
 
                     <PrimaryButton disabled={false} size="lg" type="submit">Continue</PrimaryButton>
 
