@@ -7,15 +7,22 @@ import { useForm } from "@tanstack/react-form"
 import { FormEvent } from "react";
 import { PrimaryButton, SecondaryButton } from "@/components/custom/primaryButton";
 import { signInSchema } from "../validationSchema";
-import { useSignIn } from "@clerk/nextjs";
+import { useClerk, useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { trpc } from "@/app/_trpc/client";
+import { REGISTRATION_PAGE } from "@/services/urls";
 
 interface SignInCardProps {
     setStateAction: (state: SignInFlow) => void
 }
 
+
 export default function SignInCard({ setStateAction }: SignInCardProps) {
+
+    const getUserDetailsMutation = trpc.userRouter.getUserDetails.useMutation();
+
+    const { signOut } = useClerk();
 
     const { isLoaded, signIn, setActive } = useSignIn();
     const router = useRouter();
@@ -41,17 +48,27 @@ export default function SignInCard({ setStateAction }: SignInCardProps) {
                     })
 
                     if (result?.status === "complete") {
+                        // check if the user has been completely registered?
                         await setActive({ session: result.createdSessionId });
-                        router.push("/")
+
+                        const userDetails = await getUserDetailsMutation.mutateAsync(formData.value.emailAddress)
+
+                        if (!userDetails) {
+                            router.push(REGISTRATION_PAGE);
+                        } else {
+                            router.push("/")
+                        }
                     }
                     // eslint-disable-next-line
                 } catch (err: any) {
+                    await signOut()
+                    console.log(err)
                     console.log(err.errors?.[0].message ?? "Login failed")
                 }
-                console.log(formData.value)
             }
         }
     )
+
 
     const handleSignIn = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();

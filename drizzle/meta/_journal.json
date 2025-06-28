@@ -15,6 +15,13 @@
       "when": 1751021241360,
       "tag": "0001_tidy_crystal",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1751048392997,
+      "tag": "0002_chemical_the_executioner",
+      "breakpoints": true
     }
   ]
 }
