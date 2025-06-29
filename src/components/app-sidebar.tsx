@@ -2,12 +2,9 @@
 
 import * as React from "react"
 import {
-    AudioWaveform,
     BookOpen,
     Bot,
-    Command,
     Frame,
-    GalleryVerticalEnd,
     Map,
     PieChart,
     Settings2,
@@ -22,38 +19,16 @@ import {
     SidebarContent,
     SidebarFooter,
     SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
     SidebarRail,
 } from "@/components/ui/sidebar"
 import { useUser } from "@clerk/nextjs"
-import Link from "next/link"
+import { TeamSwitcher } from "./team-switcher"
+import { trpc } from "@/app/_trpc/client"
+import { Skeleton } from "./ui/skeleton"
+import { useRouter } from "next/navigation"
 
 // This is sample data.
-const data = {
-    user: {
-        name: "shadcn",
-        email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
-    },
-    teams: [
-        {
-            name: "Acme Inc",
-            logo: GalleryVerticalEnd,
-            plan: "Enterprise",
-        },
-        {
-            name: "Acme Corp.",
-            logo: AudioWaveform,
-            plan: "Startup",
-        },
-        {
-            name: "Evil Corp.",
-            logo: Command,
-            plan: "Free",
-        },
-    ],
+const sample_data = {
     navMain: [
         {
             title: "Playground",
@@ -162,29 +137,28 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
+    // eslint-disable-next-line
+    const { data, isLoading, isError, refetch } = trpc.workspaceRouter.getAllUserWorkspaces.useQuery();
+
     const { isLoaded, user } = useUser();
+
+    const router = useRouter();
+
+    if (isError || data?.code == 404) {
+        router.push("/registration");
+    }
 
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href="/">
-                                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                                    <Command className="size-4" />
-                                </div>
-                                <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-medium">Acme Inc</span>
-                                    <span className="truncate text-xs">Enterprise</span>
-                                </div>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarHeader>            <SidebarContent>
-                <NavMain items={data.navMain} />
-                <NavProjects projects={data.projects} />
+                {isLoading ? <Skeleton className='h-[45px] w-full bg-gray-600 rounded-md' /> :
+                    <TeamSwitcher teams={data?.data as { name: string, id: number }[] || []} />
+                }
+
+            </SidebarHeader>
+            <SidebarContent>
+                <NavMain items={sample_data.navMain} />
+                <NavProjects projects={sample_data.projects} />
             </SidebarContent>
             <SidebarFooter>
                 {isLoaded && <NavUser user={{ name: user?.firstName + " " + user?.lastName, email: user?.emailAddresses.toString() || "", avatar: user?.imageUrl.toString() || ((user?.firstName?.[0] || "C") + (user?.lastName?.[0] || "N")) }} />}

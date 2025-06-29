@@ -2,7 +2,7 @@ import { relations } from "drizzle-orm";
 import { pgTable, primaryKey, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const userDetails = pgTable('users', {
-    id: serial('id').primaryKey(),
+    id: text('id').primaryKey(),
     firstName: text('first_name'),
     lastName: text('last_name'),
     email: varchar('email', { length: 256 }).notNull().unique(),
@@ -14,7 +14,7 @@ export const workspaces = pgTable('workspaces', {
     id: serial('id').primaryKey(),
     name: text('workspace_name').notNull(),
     joinKey: varchar('join_key', { length: 7 }).unique().notNull(),
-    creatorId: serial('creator_id').references(() => userDetails.id, { onDelete: 'cascade' }),
+    creatorId: text('creator_id').references(() => userDetails.id, { onDelete: 'cascade' }),
     createdAt: timestamp().defaultNow(),
     updatedAt: timestamp().defaultNow().$onUpdateFn(() => new Date()),
 })
@@ -33,7 +33,7 @@ export const creatorWorkspaceRelation = relations(userDetails, ({ many }) => ({
 
 // many to many relation bewteen workspace and pending users
 export const pendingUserToWorkspace = pgTable('pending_user_to_workspace', {
-    userId: serial('user_id').notNull().references(() => userDetails.id, { onDelete: 'cascade' }),
+    userId: text('user_id').notNull().references(() => userDetails.id, { onDelete: 'cascade' }),
     workspacesId: serial('workspace_id').notNull().references(() => workspaces.id, { onDelete: 'cascade' })
 }, (table) => [
     // composite key for unique entry
@@ -50,7 +50,7 @@ export const workspacePendingUserRelation = relations(workspaces, ({ many }) => 
 
 // many to many relation between workspace and joined users
 export const joinedUserToWorkspace = pgTable('joined_user_to_workspace', {
-    userId: serial('user_id').notNull().references(() => userDetails.id, { onDelete: 'cascade' }),
+    userId: text('user_id').notNull().references(() => userDetails.id, { onDelete: 'cascade' }),
     workspacesId: serial('workspace_id').notNull().references(() => workspaces.id, { onDelete: 'cascade' })
 }, (table) => [
     // composite key for unique entry
@@ -64,3 +64,4 @@ export const joinedUserWorkspaceRelation = relations(userDetails, ({ many }) => 
 export const workspaceJoindUserRelation = relations(workspaces, ({ many }) => ({
     joinedUsers: many(userDetails)
 }))
+

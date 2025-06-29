@@ -35,7 +35,7 @@ export default function RootLayout({
             }
         }}>
             <html lang="en">
-                <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-primary-background text-primary-text`}
+                <body className={`${geistSans.variable} ${geistMono.variable} vsc-initialized antialiased bg-primary-background text-primary-text`}
                 >
                     <TRPCProvider>
                         {children}

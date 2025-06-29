@@ -22,7 +22,7 @@ export const userRouter = router({
         methodOfJoin: z.enum(['JOIN', 'CREATE']),
         joinCode: z.string().nullable(),
         workspaceName: z.string().nullable()
-    })).mutation(async ({ input }) => {
+    })).mutation(async ({ input, ctx }) => {
 
         logger.info('Request to register user');
         try {
@@ -52,6 +52,7 @@ export const userRouter = router({
                     // insert the userDetails
                     const currentUser = await tx.insert(userDetails)
                         .values({
+                            id: ctx.auth.userId,
                             firstName: input.firstName,
                             lastName: input.lastName,
                             email: input.email
@@ -87,14 +88,13 @@ export const userRouter = router({
                         );
                     }
 
-                    const userAccount = await tx.insert(userDetails)
+                    await tx.insert(userDetails)
                         .values({
+                            id: ctx.auth.userId,
                             firstName: input.firstName,
                             lastName: input.lastName,
                             email: input.email
                         }).returning();
-
-                    const creatorId = userAccount[0].id;
 
                     let createdWorkspaceId: number = 0;
 
@@ -107,7 +107,7 @@ export const userRouter = router({
                             const createdWorkspace = await tx.insert(workspaces)
                                 .values({
                                     name: input.workspaceName,
-                                    creatorId: creatorId,
+                                    creatorId: ctx.auth.userId,
                                     joinKey: joinKey
                                 }).returning();
 
@@ -126,7 +126,7 @@ export const userRouter = router({
                     // inserting the creator on the userlist of the workspace
                     await tx.insert(joinedUserToWorkspace)
                         .values({
-                            userId: creatorId,
+                            userId: ctx.auth.userId,
                             workspacesId: createdWorkspaceId
                         });
 
